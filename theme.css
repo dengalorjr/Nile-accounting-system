@@ -10,3 +10,7 @@
 .check{display:flex;align-items:center;gap:8px;cursor:pointer}.check input{width:auto;margin:0}
 .months-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px;margin-top:10px}
 .WAIVED{background:#e0ecff;color:#1d4f9a}
+
+/* ---- v3: month chips ---- */
+.month-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.chip{display:inline-block;padding:4px 10px;border-radius:99px;font-size:12px;font-weight:bold;white-space:nowrap}

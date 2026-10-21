@@ -59,6 +59,7 @@ create table if not exists enrollments (
   "discountScholarship" numeric not null default 0,
   waived boolean not null default false,
   qualification text,
+  months text default '',
   "totalFees" numeric default 0,
   "unitAmount" numeric default 0,
   "installmentCount" integer default 0,
@@ -80,6 +81,7 @@ create table if not exists payments (
   period text,
   notes text,
   "receiptNumber" text,
+  "periodMonth" integer,
   "createdAt" timestamptz default now(),
   deleted boolean not null default false
 );
@@ -164,3 +166,13 @@ create index if not exists idx_enrollments_course  on enrollments("courseId");
 create index if not exists idx_payments_enrollment on payments("enrollmentId");
 create index if not exists idx_payments_student    on payments("studentId");
 create index if not exists idx_payments_course     on payments("courseId");
+
+do $$ begin
+  if not exists (select 1 from pg_constraint where conname = 'payments_period_month_valid') then
+    alter table payments add constraint payments_period_month_valid check ("periodMonth" is null or "periodMonth" between 1 and 12);
+  end if;
+  if not exists (select 1 from pg_constraint where conname = 'enrollments_months_valid') then
+    alter table enrollments add constraint enrollments_months_valid check
+      (months is null or months = '' or months ~ '^(1[0-2]|[1-9])(,(1[0-2]|[1-9]))*$');
+  end if;
+end $$;
