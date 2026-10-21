@@ -27,7 +27,8 @@ can use it from any phone or computer with the same live data.
 | `app.js` | All the app logic |
 | `styles.css`, `theme.css`, `font.css` | Styling (unchanged) |
 | `nile-logo.png`, `Alexandria-VariableFont_wght.ttf` | Logo + font (unchanged) |
-| `schema.sql` | **You run this once** in Supabase to create the tables |
+| `schema.sql` | **You run this once** in Supabase to create the tables (new installs) |
+| `migration-v2.sql` | **Existing installs:** run once in Supabase SQL Editor before uploading the new `app.js` (discount, qualification and course-month columns) |
 
 ---
 

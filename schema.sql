@@ -42,6 +42,7 @@ create table if not exists courses (
   "defaultFees" numeric default 0,
   "defaultMonthly" numeric default 0,
   "defaultInstallments" integer default 1,
+  months text default '',
   active boolean not null default true
 );
 
@@ -51,6 +52,13 @@ create table if not exists enrollments (
   "courseId" text references courses(id),
   "paymentType" text,
   date date,
+  "originalFees" numeric default 0,
+  "discountAdmin" numeric not null default 0,
+  "discountMulti" numeric not null default 0,
+  "discountRelative" numeric not null default 0,
+  "discountScholarship" numeric not null default 0,
+  waived boolean not null default false,
+  qualification text,
   "totalFees" numeric default 0,
   "unitAmount" numeric default 0,
   "installmentCount" integer default 0,
@@ -132,3 +140,27 @@ create policy "anon full access" on payments for all using (true) with check (tr
 create policy "anon full access" on expenses for all using (true) with check (true);
 create policy "anon full access" on audit_logs for all using (true) with check (true);
 create policy "anon full access" on settings for all using (true) with check (true);
+
+-- Data-integrity rules
+do $$ begin
+  if not exists (select 1 from pg_constraint where conname = 'enrollments_discounts_nonneg') then
+    alter table enrollments add constraint enrollments_discounts_nonneg check
+      ("discountAdmin" >= 0 and "discountMulti" >= 0 and "discountRelative" >= 0
+       and "discountScholarship" >= 0 and coalesce("originalFees",0) >= 0);
+  end if;
+  if not exists (select 1 from pg_constraint where conname = 'enrollments_qualification_valid') then
+    alter table enrollments add constraint enrollments_qualification_valid check
+      (qualification is null or qualification in ('أساس','ثانوي','جامعي'));
+  end if;
+  if not exists (select 1 from pg_constraint where conname = 'courses_months_valid') then
+    alter table courses add constraint courses_months_valid check
+      (months is null or months = '' or months ~ '^(1[0-2]|[1-9])(,(1[0-2]|[1-9]))*$');
+  end if;
+end $$;
+
+-- Indexes for the lookups the app does constantly
+create index if not exists idx_enrollments_student on enrollments("studentId");
+create index if not exists idx_enrollments_course  on enrollments("courseId");
+create index if not exists idx_payments_enrollment on payments("enrollmentId");
+create index if not exists idx_payments_student    on payments("studentId");
+create index if not exists idx_payments_course     on payments("courseId");
