@@ -30,6 +30,8 @@ create table if not exists trainers (
   phone text,
   "courseId" text,
   "monthlySalary" numeric not null default 0,
+  "salaryType" text not null default 'Monthly',
+  "dailyRate" numeric not null default 0,
   notes text,
   deleted boolean not null default false
 );
@@ -175,4 +177,98 @@ do $$ begin
     alter table enrollments add constraint enrollments_months_valid check
       (months is null or months = '' or months ~ '^(1[0-2]|[1-9])(,(1[0-2]|[1-9]))*$');
   end if;
+end $$;
+
+-- ===== v4: trainer daily wages + Books =====
+create table if not exists trainer_days (
+  id text primary key,
+  "trainerId" text not null references trainers(id) on delete cascade,
+  date date not null,
+  days numeric not null default 1,
+  notes text,
+  paid boolean not null default false,
+  "expenseId" text,
+  "createdAt" timestamptz default now(),
+  deleted boolean not null default false
+);
+
+-- ===== Books (completely separate from the center's accounts) =====
+create table if not exists books (
+  id text primary key,
+  name text not null,
+  edition text not null default '',
+  cost numeric not null default 0,
+  price numeric not null default 0,
+  copies integer not null default 0,
+  notes text,
+  active boolean not null default true,
+  "createdAt" timestamptz default now(),
+  deleted boolean not null default false
+);
+
+create table if not exists book_sales (
+  id text primary key,
+  "bookId" text not null references books(id),
+  "studentId" text not null references students(id),
+  "courseId" text,
+  qty integer not null default 1,
+  price numeric not null default 0,
+  date date not null,
+  notes text,
+  "createdAt" timestamptz default now(),
+  deleted boolean not null default false
+);
+
+create table if not exists book_payments (
+  id text primary key,
+  "saleId" text not null references book_sales(id),
+  amount numeric not null,
+  date date not null,
+  method text,
+  notes text,
+  "createdAt" timestamptz default now(),
+  deleted boolean not null default false
+);
+
+-- ===== Data-integrity rules =====
+do $$ begin
+  if not exists (select 1 from pg_constraint where conname = 'trainers_salary_valid') then
+    alter table trainers add constraint trainers_salary_valid check
+      ("salaryType" in ('Monthly','Daily') and "dailyRate" >= 0);
+  end if;
+  if not exists (select 1 from pg_constraint where conname = 'trainer_days_positive') then
+    alter table trainer_days add constraint trainer_days_positive check (days > 0);
+  end if;
+  if not exists (select 1 from pg_constraint where conname = 'books_nonneg') then
+    alter table books add constraint books_nonneg check (cost >= 0 and price >= 0 and copies >= 0);
+  end if;
+  if not exists (select 1 from pg_constraint where conname = 'book_sales_valid') then
+    alter table book_sales add constraint book_sales_valid check (qty > 0 and price >= 0);
+  end if;
+  if not exists (select 1 from pg_constraint where conname = 'book_payments_positive') then
+    alter table book_payments add constraint book_payments_positive check (amount > 0);
+  end if;
+end $$;
+
+-- One row per book + edition (ignoring deleted ones)
+create unique index if not exists books_name_edition_uq on books (lower(name), lower(edition)) where not deleted;
+
+-- Indexes
+create index if not exists idx_trainer_days_trainer on trainer_days("trainerId");
+create index if not exists idx_book_sales_book     on book_sales("bookId");
+create index if not exists idx_book_sales_student  on book_sales("studentId");
+create index if not exists idx_book_payments_sale  on book_payments("saleId");
+
+-- ===== Row Level Security (same model as the other tables) =====
+alter table trainer_days  enable row level security;
+alter table books         enable row level security;
+alter table book_sales    enable row level security;
+alter table book_payments enable row level security;
+
+do $$ declare t text; begin
+  foreach t in array array['trainer_days','books','book_sales','book_payments'] loop
+    if not exists (select 1 from pg_policies where tablename = t and policyname = 'anon full access') then
+      execute format('create policy "anon full access" on %I for all using (true) with check (true)', t);
+    end if;
+  end loop;
 end $$;
