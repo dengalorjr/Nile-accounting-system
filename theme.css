@@ -14,3 +14,32 @@
 /* ---- v3: month chips ---- */
 .month-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
 .chip{display:inline-block;padding:4px 10px;border-radius:99px;font-size:12px;font-weight:bold;white-space:nowrap}
+
+/* ---- v5: fully responsive tables, pages and forms ---- */
+table.fit{font-size:13px}
+table.fit th,table.fit td{white-space:normal;padding:9px 6px;vertical-align:top}
+.table-wrap{max-width:100%}
+td .btn{margin:2px 0}
+@media(max-width:900px){
+  .table-wrap{overflow:visible}
+  table.rt,table.rt tbody,table.rt tr,table.rt td{display:block;width:100%}
+  table.rt thead{position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden}
+  table.rt tr{background:#fff;border:1px solid #d9edf3;border-radius:12px;margin:0 0 12px;padding:6px 12px;box-shadow:0 2px 8px #07547d0d}
+  table.rt td{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:6px 12px;padding:8px 0;border-bottom:1px dashed #e3eef2;white-space:normal;text-align:left}
+  table.rt td:last-child{border-bottom:0}
+  table.rt td::before{content:attr(data-label);font-weight:700;color:#376173;flex:none;text-align:right}
+  table.rt td[data-label=""]::before{content:none}
+  table.rt td.empty{justify-content:center;text-align:center}
+  table.rt td .btn{margin:2px}
+}
+@media(max-width:720px){
+  .actions{flex-direction:column;align-items:stretch}
+  .actions .btn,.actions .field{width:100%}
+  .cards{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .card{padding:12px}.card b{font-size:18px}
+  .panel{padding:14px}
+  .modal{padding:8px}.modal-box{padding:14px;max-height:96vh}
+  .modal-box.wide{width:100%}
+  h3{font-size:16px}
+  .months-grid{grid-template-columns:repeat(auto-fill,minmax(95px,1fr))}
+}
