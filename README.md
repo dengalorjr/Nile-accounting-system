@@ -31,6 +31,7 @@ can use it from any phone or computer with the same live data.
 | `migration-v2.sql` | **Existing installs:** run once in Supabase SQL Editor before uploading the new `app.js` (discount, qualification and course-month columns) |
 | `migration-v3.sql` | **Existing installs:** run once after `migration-v2.sql` (month-based tracking for monthly courses) |
 | `migration-v4.sql` | **Existing installs:** run once after v3 (trainer daily wages + Books module) |
+| `migration-v5.sql` | **Existing installs:** run once after v4 (book buyers who are not registered trainees) |
 
 ---
 

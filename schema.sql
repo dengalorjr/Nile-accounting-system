@@ -209,7 +209,9 @@ create table if not exists books (
 create table if not exists book_sales (
   id text primary key,
   "bookId" text not null references books(id),
-  "studentId" text not null references students(id),
+  "studentId" text references students(id),
+  "buyerName" text,
+  "buyerPhone" text,
   "courseId" text,
   qty integer not null default 1,
   price numeric not null default 0,
@@ -271,4 +273,11 @@ do $$ declare t text; begin
       execute format('create policy "anon full access" on %I for all using (true) with check (true)', t);
     end if;
   end loop;
+end $$;
+
+do $$ begin
+  if not exists (select 1 from pg_constraint where conname = 'book_sales_buyer_present') then
+    alter table book_sales add constraint book_sales_buyer_present check
+      ("studentId" is not null or length(trim(coalesce("buyerName",''))) > 0);
+  end if;
 end $$;
