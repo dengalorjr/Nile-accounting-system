@@ -43,3 +43,42 @@ td .btn{margin:2px 0}
   h3{font-size:16px}
   .months-grid{grid-template-columns:repeat(auto-fill,minmax(95px,1fr))}
 }
+
+/* ---- v6: visible dividers + colors for Books and Trainers tables ---- */
+table.grid-table{border-collapse:collapse;border:2px solid #9fcad8;border-radius:12px}
+table.grid-table th,table.grid-table td{border:1px solid #bcd9e3}
+table.grid-table thead th{background:linear-gradient(180deg,#0b6f94,#07547d);color:#fff;border-color:#3d86a5;text-align:center}
+table.grid-table td{text-align:center}
+table.grid-table td:nth-child(2){text-align:right}
+table.grid-table tbody tr{--ac:#00a9d6}
+table.grid-table tbody tr:nth-child(4n+1){--ac:#00a9d6}
+table.grid-table tbody tr:nth-child(4n+2){--ac:#00a38c}
+table.grid-table tbody tr:nth-child(4n+3){--ac:#f49a32}
+table.grid-table tbody tr:nth-child(4n){--ac:#7a5cc7}
+table.grid-table tbody tr:nth-child(odd){background-color:#fff}
+table.grid-table tbody tr:nth-child(even){background-color:#eef7fb}
+table.grid-table tbody tr:hover{background-color:#dff2f9}
+table.grid-table tbody td:first-child{border-right:5px solid var(--ac)}
+.c-good{color:#16743a;font-weight:700}.c-warn{color:#a15c00;font-weight:700}.c-bad{color:#b8413f;font-weight:700}.c-muted{color:#6a7f8c}
+.tag{display:inline-block;padding:3px 10px;border-radius:99px;font-size:12px;font-weight:700}
+.tag-m{background:#d8f0ff;color:#0a5a85}.tag-d{background:#ffe9c9;color:#8a4b00}
+@media(min-width:901px){
+  table.books-dash th:nth-child(-n+2){background:#073a67}
+  table.books-dash th:nth-child(n+3):nth-child(-n+5){background:#0a7aa3}
+  table.books-dash th:nth-child(n+6):nth-child(-n+8){background:#b86a10}
+  table.books-dash th:nth-child(n+9):nth-child(-n+12){background:#0b8a73}
+  table.books-dash th:nth-child(13){background:#5b6b78}
+  table.books-dash td:nth-child(n+3):nth-child(-n+5){background-image:linear-gradient(#00a9d614,#00a9d614)}
+  table.books-dash td:nth-child(n+6):nth-child(-n+8){background-image:linear-gradient(#f49a321c,#f49a321c)}
+  table.books-dash td:nth-child(n+9):nth-child(-n+12){background-image:linear-gradient(#00a38c17,#00a38c17)}
+  table.books-dash th,table.books-dash td{border-left-width:1px}
+  table.books-dash th:nth-child(3),table.books-dash td:nth-child(3),table.books-dash th:nth-child(6),table.books-dash td:nth-child(6),table.books-dash th:nth-child(9),table.books-dash td:nth-child(9),table.books-dash th:nth-child(13),table.books-dash td:nth-child(13){border-right:3px solid #7fb4c6}
+}
+@media(max-width:900px){
+  table.rt.grid-table{border:0;border-radius:0}
+  table.rt.grid-table tr{border-right:6px solid var(--ac)}
+  table.rt.grid-table td{border:0;border-bottom:1px dashed #cfe3ea;text-align:left}
+  table.rt.grid-table td:first-child{border-right:0}
+  table.rt.grid-table td:last-child{border-bottom:0}
+  table.rt.grid-table tbody tr:nth-child(even){background-color:#eef7fb}
+}
